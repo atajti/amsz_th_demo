@@ -1,5 +1,5 @@
 data/
 venv/
-*cache/
+*cache*/
 secrets/
-__pychache__
+*.pyc
