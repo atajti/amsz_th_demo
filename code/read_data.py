@@ -1,8 +1,63 @@
 """Import Google data timeline"""
 import json
 import re
-import pandas as pd
+import os
+from os import PathLike
 from pprint import pprint
+from itertools import chain
+import pandas as pd
+from code.location_deduplication import load_points, cluster_points
+
+
+
+def find_jsonfile_paths(root: str | PathLike = ".") -> list:
+    """searches a directory forr googel timeline files"""
+    full_paths = []
+    for path, subdirs, files in os.walk(root):
+        for name in files:
+            full_paths.append([f for f in files if f.endswith(".json")])
+    return list(chain.from_iterable(full_paths))
+
+
+def detect_old_timeline(timeline_data: dict) -> bool:
+    """checks if a json is old timeline format"""
+    return"locations" in timeline_data
+
+def detect_new_timeline(timeline_data) -> bool:
+    """checks if a soon is new timeline format"""
+    return "semanticSegments" in timeline_data
+
+
+def load_timeline(filepath: str|PathLike) -> dict:
+    """reads a timeline, adds type = old/new flag"""
+    try:
+        with open(filepath, "r") as jsonfile:
+            data = json.load(jsonfile)
+    except Exception as e:
+        print(f"{e} when reading {filepath}")
+        return None
+    if detect_old_timeline(data):
+        data["timeline_type"] = "old"
+    elif detect_new_timeline(data):
+        data["timeline_type"] = "new"
+    else:
+        print(f"No timeline type could be identified in file {filepath}, skipping.")
+    return data
+
+
+def read_timelines(folder: str|PathLike = ".") -> list[dict]:
+    """reads all timeline data hat is found"""
+    jsonfiles = find_jsonfile_paths(folder)
+    timeline_list = [load_timeline(f"{folder}/{jsonf}") for jsonf in jsonfiles]
+
+
+
+
+
+def get_semanticsegmets(folder):
+
+
+all_timelines = read_timelines("data")
 
 
 def parse_point(s):

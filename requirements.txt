@@ -2,3 +2,5 @@ pandas
 openpyxl
 pyarrow
 folium
+scikit-learn
+pyshp
