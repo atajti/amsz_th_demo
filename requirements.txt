@@ -4,3 +4,5 @@ pyarrow
 folium
 scikit-learn
 pyshp
+geopandas
+shapefile
